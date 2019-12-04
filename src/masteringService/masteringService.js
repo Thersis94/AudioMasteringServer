@@ -38,7 +38,7 @@ const masteringService = {
             }
         
             // Done.
-            console.log(stdout);
+            //console.log(stdout);
         });
     }
 }

@@ -5,8 +5,6 @@ const cors = require('cors')
 const helmet = require('helmet')
 const { NODE_ENV } = require('./config')
 
-//const thingsRouter = require('./things/things-router')
-//const reviewsRouter = require('./reviews/reviews-router')
 const audioRouter = require('./audio/audio-router')
 
 const authRouter = require('./auth/auth-router')
@@ -25,8 +23,6 @@ app.use(morgan((NODE_ENV === 'production') ? 'tiny' : 'common', {
 app.use(cors(corsOptions))
 app.use(helmet())
 
-//app.use('/api/things', thingsRouter)
-//app.use('/api/reviews', reviewsRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/audio-master', audioRouter)
