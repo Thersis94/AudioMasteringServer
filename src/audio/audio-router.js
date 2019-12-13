@@ -1,84 +1,95 @@
 const express = require("express");
-//const AudioService = require('./things-service')
+const audioService = require('./audio-service')
 const { requireAuth } = require("../middleware/jwt-auth");
 const fs = require("fs");
 const mv = require("mv");
 const masteringService = require("../masteringService/masteringService");
+const userService = require("../users/users-service")
 
 const audioRouter = express.Router();
 const jsonBodyParser = express.json();
 
 audioRouter.route("/").post(jsonBodyParser, (req, res, next) => {
-  const userID = req.headers.username;
+  const userName = req.headers.username;
   const IncomingFile = require("formidable").IncomingForm;
   const form = new IncomingFile();
 
+  let newName = null
   let directoryPath = null;
+  let userId = null
+
+  
 
   form.on("file", (field, file) => {
     const fileLocation = file.path;
     const fileName = file.name;
-    const newPath = `C:/Users/thers/AudioMastering/TestingFolder/${userID}/`;
+    newName = fileName
+    const newPath = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${userName}\\`;
     directoryPath = newPath;
     fs.rename(fileLocation, newPath + fileName, function(err) {
       console.log(err);
     });
   });
   form.on("end", () => {
-    console.log("form end");
     function checkFiles() {
-      if (fs.readdirSync(directoryPath).length === 3) {
-        console.log("beginning mastering");
-        masteringService.masterFile(directoryPath);
-      } else if (fs.readdirSync(directoryPath).length === 1) {
-        return console.log("Already mastered");
-      } else if (fs.readdirSync(directoryPath).length === 2) {
+      if (fs.readdirSync(directoryPath).length === 1) {
         console.log("waiting for files");
+        console.log(fs.readdirSync(directoryPath))
         setTimeout(checkFiles, 1000);
       }
-    }
-    checkFiles();
-    function checkForCompletedMaster() {
-      const storeArr = fs.readdirSync(directoryPath);
-      let masterExists = 0;
-      let raw = null;
-      let target = null;
-      let masteredFile = null;
-      for (let i = 0; i < storeArr.length; i++) {
-        if (storeArr[i][0] === "R") {
-          raw = storeArr[i];
-        }
-        if (storeArr[i][0] === "T") {
-          target = storeArr[i];
-        }
-        if (storeArr[i][0] === "[") {
-          masteredFile = storeArr[i];
-          masterExists = 1;
-        }
-      }
-      if (masterExists) {
-        if (raw === null || target === null || masteredFile === null) {
-          console.log("stopping for null inputs");
-        } else {
-          fs.unlinkSync(directoryPath + raw);
-          fs.unlinkSync(directoryPath + target);
-          fs.rename(
-            directoryPath + masteredFile,
-            directoryPath + "mastered/" + masteredFile,
-            function(err) {
-              console.log(err);
-            }
-          );
-        }
-      } else {
-        setTimeout(checkForCompletedMaster, 1000);
+      else {
+        masteringService.masterFile(directoryPath, userName)
       }
     }
-    checkForCompletedMaster();
-    //add a response to inform client of success or failure
+    checkFiles()
+    name = "[Mastered]" + newName.slice(4)
+    userService.getUserId(req.app.get("db"), userName)
+    .then(userInfo => {
+      user_id = userInfo.id
+      const newTrack = {name, user_id}
+      audioService.insertTrack(req.app.get("db"), newTrack)
+    })
     res.json();
   });
   form.parse(req);
 });
+
+audioRouter.route("/").get((req, res, next) => {
+  const user_name = req.headers.username
+  userService.getUserId(req.app.get("db"), user_name)
+  .then(userInfo => {
+    user_id = userInfo.id
+    audioService.getAllTracks(req.app.get("db"), user_id)
+    .then(tracks => {
+      res.json(tracks);
+    })
+  })
+    .catch(next);
+});
+
+audioRouter.route("/download").get((req, res) => {
+  const { username, trackname } = req.headers
+  const file = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${username}\\mastered\\${trackname}`;
+  res.download(file);
+})
+
+audioRouter.route("/").delete((req, res, next) => {
+  const user_name = req.headers.username
+  const track = req.headers.trackname
+  const file = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${user_name}\\mastered\\${track}`;
+
+
+  if(fs.existsSync(file)){
+    fs.unlinkSync(file)
+  }
+  
+  userService.getUserId(req.app.get("db"), user_name)
+  .then(userInfo => {
+    user_id = userInfo.id
+    audioService.deleteTrack(req.app.get("db"), user_id, track)
+    res.status(200)
+  })
+    .catch(next);
+})
 
 module.exports = audioRouter;

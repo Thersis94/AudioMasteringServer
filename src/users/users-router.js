@@ -36,7 +36,15 @@ usersRouter.post("/", jsonBodyParser, (req, res, next) => {
               return console.error(err);
           }
           console.log("Directory created successfully!");
+
        });
+       fs.mkdir(directoryPath + newUser.user_name + "/mastered", function(err){
+        if (err) {
+            return console.error(err);
+        }
+        console.log("Sub directory created successfully!");
+
+     });
 
         return UsersService.insertUser(req.app.get("db"), newUser).then(
           user => {

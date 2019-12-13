@@ -1,7 +1,8 @@
 CREATE TABLE tracks (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  date_created TIMESTAMP DEFAULT now() NOT NULL,
-  user_id INTEGER REFERENCES users(id)
-    ON DELETE SET NULL
+  date_created TIMESTAMP DEFAULT now() NOT NULL
 );
+
+ALTER TABLE tracks 
+  ADD user_id INTEGER REFERENCES users(id) ON DELETE SET NULL;
