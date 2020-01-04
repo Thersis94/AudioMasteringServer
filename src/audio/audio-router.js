@@ -24,7 +24,32 @@ audioRouter.route("/").post(jsonBodyParser, (req, res, next) => {
     const fileLocation = file.path;
     const fileName = file.name;
     newName = fileName
-    const newPath = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${userName}\\`;
+    const rootUserDir = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\`
+    const newPath = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${userName}\\`;//replave with env variable
+    
+
+    console.log(!fs.readdirSync(rootUserDir).includes(userName))
+    if(!fs.readdirSync(rootUserDir).includes(userName)) {
+      fs.mkdir(newPath, function(err){
+        if (err) {
+            return console.error(err);
+        }
+        console.log("Directory created successfully!");
+
+     });
+    }
+    if(fs.readdirSync(newPath)[0] != 'mastered') {
+      fs.mkdir(newPath + "/mastered", function(err){
+        if (err) {
+            return console.error(err);
+        }
+        console.log("Directory created successfully!");
+
+     });
+    }
+    
+    
+    
     directoryPath = newPath;
     fs.rename(fileLocation, newPath + fileName, function(err) {
       console.log(err);
@@ -34,7 +59,6 @@ audioRouter.route("/").post(jsonBodyParser, (req, res, next) => {
     function checkFiles() {
       if (fs.readdirSync(directoryPath).length === 1) {
         console.log("waiting for files");
-        console.log(fs.readdirSync(directoryPath))
         setTimeout(checkFiles, 1000);
       }
       else {
@@ -69,14 +93,14 @@ audioRouter.route("/").get((req, res, next) => {
 
 audioRouter.route("/download").get((req, res) => {
   const { username, trackname } = req.headers
-  const file = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${username}\\mastered\\${trackname}`;
+  const file = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${username}\\mastered\\${trackname}`;//replace with env variable
   res.download(file);
 })
 
 audioRouter.route("/").delete((req, res, next) => {
   const user_name = req.headers.username
   const track = req.headers.trackname
-  const file = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${user_name}\\mastered\\${track}`;
+  const file = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${user_name}\\mastered\\${track}`;//replace with env variable
 
 
   if(fs.existsSync(file)){
