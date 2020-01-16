@@ -11,7 +11,7 @@ const app = express();
 const masteringService = {
   masterFile(newPath, userID) {
     let rawFile = null;
-    const rootFolder = `C:/Users/thers/AudioMastering/TestingFolder/`;
+    const rootFolder = `C:/Users/thers/AudioMastering/TestingFolder/`;//Replace with a env variable
     const fileLocation = newPath;
     let futureName = null;
     fs.readdirSync(fileLocation).forEach(file => {
@@ -49,3 +49,4 @@ const masteringService = {
 };
 
 module.exports = masteringService;
+runScript
