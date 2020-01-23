@@ -40,7 +40,12 @@ const masteringService = {
           setTimeout(runBat, 1000);
         }
         else {
-          fs.unlinkSync(fileLocation + rawFile);
+          try {
+            fs.unlinkSync(fileLocation + rawFile);
+          }
+          catch(err) {
+            console.log(err)
+          }
         }
       });
     }
