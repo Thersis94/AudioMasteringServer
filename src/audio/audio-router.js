@@ -27,15 +27,12 @@ audioRouter.route("/").post(jsonBodyParser, (req, res, next) => {
     const rootUserDir = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\`
     const newPath = `C:\\Users\\thers\\AudioMastering\\TestingFolder\\${userName}\\`;//replave with env variable
 
-
-    console.log(!fs.readdirSync(rootUserDir).includes(userName))
     if (!fs.readdirSync(rootUserDir).includes(userName)) {
       fs.mkdir(newPath, function (err) {
         if (err) {
           return console.error(err);
         }
         console.log("Directory created successfully!");
-
       });
     }
     if (fs.readdirSync(newPath)[0] != 'mastered') {
@@ -44,7 +41,6 @@ audioRouter.route("/").post(jsonBodyParser, (req, res, next) => {
           return console.error(err);
         }
         console.log("Directory created successfully!");
-
       });
     }
     directoryPath = newPath;
