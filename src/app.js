@@ -23,6 +23,10 @@ app.use(morgan((NODE_ENV === 'production') ? 'tiny' : 'common', {
 app.use(cors(corsOptions))
 app.use(helmet())
 
+app.get("/", (req, res) => {
+  res.send("Hello, world!");
+});
+
 app.use('/api/auth', authRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/audio-master', audioRouter)
