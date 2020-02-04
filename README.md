@@ -1,4 +1,10 @@
-Setting Up
+## What is AI Audio?
+Ai audio is a platform that allows users to master audio files using a machine learning application that has been trained on thousands of hit songs.
+
+## Requirements
+The program that this server uses to master its audio is proprietary. However you are welcome to use it as a framework for your own audio file transfer and persistence service. With the help of programs like MrsWatson by Teragon Audio http://teragonaudio.com/MrsWatson you can run your own realtime audio manipulation programs.
+
+## Setting Up
 
     Install dependencies: npm install
     Create development and test databases: createdb PLACEHOLDER_DB, createdb PLACEHOLDER_DB_TEST
@@ -11,7 +17,7 @@ Setting Up
     Bootstrap development database: npm run migrate
     Bootstrap test database: npm run migrate:test
 
-Configuring Postgres
+## Configuring Postgres
 
 For tests involving time to run properly, your Postgres database must be configured to run in the UTC timezone.
 
@@ -37,6 +43,9 @@ Scripts
     Start application for development: npm run dev
     Run tests: npm test
 
+
+
+
 Endpoints
 
 User Endpoints
@@ -54,11 +63,46 @@ Audio Endpoints
 Post /api/audio-master
 Requires user_name as header. Setup to recieve files as blobs.
 
+{
+    headers: {
+        user_name: 'EXAMPLE USERNAME'
+    }
+    file: {
+    fieldname: 'SONG',
+    originalname: 'SONG.wav',
+    destination: 'uploads/',
+    filename: '58f5951ccc35f88f3594172657d81f31',
+    path: 'uploads\\58f5951ccc35f88f3594172657d81f31',
+    size: 141628
+    }
+}
+
+
 Get /api/audio-master
 Requires user_name as header. Returns a list of persisted tracks for that user.
+
+{
+    headers: {
+        user_name: 'EXAMPLE USERNAME'
+    }
+}
 
 Return Download link /api/audio-master
 Requires user_name and track_name as headers.
 
+{
+    headers: {
+        user_name: 'EXAMPLE USERNAME',
+        track_name: 'EXAMPLE TRACKNAME'
+    }
+}
+
 Delete /api/audio-master
 Requires user_name and track_name as headers.
+
+{
+    headers: {
+        user_name: 'EXAMPLE USERNAME',
+        track_name: 'EXAMPLE TRACKNAME'
+    }
+}
